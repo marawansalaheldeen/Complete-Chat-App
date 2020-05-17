@@ -1,0 +1,19 @@
+{
+  "name": "chatapp",
+  "version": "1.0.0",
+  "description": "simple chat app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marawansalaheldeen/Complete-Chat-App.git"
+  },
+  "author": "marwan salah",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marawansalaheldeen/Complete-Chat-App/issues"
+  },
+  "homepage": "https://github.com/marawansalaheldeen/Complete-Chat-App#readme"
+}
