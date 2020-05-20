@@ -1,15 +1,39 @@
 const express = require('express');
 const path = require('path');
+const http = require('http');
+const socketio  = require('socket.io');
 
 const app = express();
+const server  = http.createServer(app);
+const io = socketio(server);
+
 
 const port = process.env.PORT || 3000;
+app.use(express.static('public'));
+
+let count = 0; 
+
+
 
 
 app.get('/',(req,res)=>{
-    res.sendFile(path.join(__dirname+'/public/home.html'))
+    res.sendFile(path.join(__dirname+'/public/home.html'));    
 })
 
-app.listen(port,()=>{
-    console.log(`Server is running on port : ${port}`)
+io.on('connection', (socket) => {
+    console.log('a user connected');
+    socket.emit('message', 'Welcome!')
+
+    socket.broadcast.emit('message','new user is conected')
+    socket.on('disconnect',()=>{
+        io.emit('message','a user has left')
+    })
+    socket.on('sendMessage',(msg)=>{
+        io.emit('message',msg)
+    })
+});
+
+
+server.listen(port,()=>{
+    console.log(`Server is running on port : ${port}`);
 })
