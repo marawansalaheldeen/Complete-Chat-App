@@ -28,8 +28,14 @@ io.on('connection', (socket) => {
     socket.on('disconnect',()=>{
         io.emit('message','a user has left')
     })
-    socket.on('sendMessage',(msg)=>{
+    socket.on('sendMessage',(msg,callback)=>{
         io.emit('message',msg)
+        callback('Dell');
+    })
+    
+    socket.on('sendloc',(coords,callbackt)=>{
+        io.emit('message',`https://www.google.com/maps/@${coords.latitude},${coords.longitude}z`)
+        callbackt('Location Shared')
     })
 });
 
