@@ -22,20 +22,20 @@ app.get('/',(req,res)=>{
 
 io.on('connection', (socket) => {
     console.log('a user connected');
-    socket.emit('message', 'Welcome!')
+    socket.emit('message', 'Welcome!');
 
-    socket.broadcast.emit('message','new user is conected')
+    socket.broadcast.emit('message','new user is conected');
     socket.on('disconnect',()=>{
-        io.emit('message','a user has left')
+        io.emit('message','a user has left');
     })
     socket.on('sendMessage',(msg,callback)=>{
-        io.emit('message',msg)
+        io.emit('message',msg);
         callback('Dell');
     })
     
     socket.on('sendloc',(coords,callbackt)=>{
-        io.emit('message',`https://www.google.com/maps/@${coords.latitude},${coords.longitude}z`)
-        callbackt('Location Shared')
+        io.emit('message',`https://www.google.com/maps/@${coords.latitude},${coords.longitude}z`);
+        callbackt('Location Shared');
     })
 });
 

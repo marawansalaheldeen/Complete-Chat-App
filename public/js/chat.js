@@ -1,30 +1,49 @@
-const socket = io()
+const socket = io();
 
+
+//Elements
+const $messageForm = document.querySelector('#message-form');
+const $formInput = $messageForm.querySelector('input');
+const $formButton = $messageForm.querySelector('button');
+const $locationButton = document.querySelector('#send-location');
+const $messages = document.querySelector('#messages');
+//Templates
+const messageTemplate = document.querySelector('#message-temp').innerHTML
 socket.on('message',(message) => {
-    console.log(message)
+    console.log(message);
+    const html = Mustache.render(messageTemplate,{
+        message
+    });
+    $messages.insertAdjacentHTML('beforeend',html);
 })
 
-document.querySelector('#message-form').addEventListener('submit', (e) => {
-    e.preventDefault()
-
-    const message = e.target.elements.msge.value
+$messageForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    $formButton.setAttribute('disabled','disabled');
+    //disable
+    const message = e.target.elements.msge.value;
 
     socket.emit('sendMessage', message,(callback)=>{
-        console.log('message delviered',callback)
+        //enable
+        $formButton.removeAttribute('disabled');
+        $formInput.value='';
+        $formInput.focus();
+        console.log('message delviered',callback);
 
     })
 })
 
-document.querySelector('#send-location').addEventListener('click',()=>{
+$locationButton.addEventListener('click',()=>{
     if(!navigator.geolocation){
-        return alert("geolocation doesn't supported by your browser")
+        return alert("geolocation doesn't supported by your browser");
     }
-
+    $locationButton.setAttribute('disabled','disabled');
     navigator.geolocation.getCurrentPosition((postion)=>{
         const latitude = postion.coords.latitude;
         const longitude = postion.coords.longitude;
         socket.emit('sendloc',{latitude,longitude},(callbackt)=>{
-            console.log(callbackt)
+            $locationButton.removeAttribute('disabled');
+            console.log(callbackt);
         })
     })
 })
