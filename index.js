@@ -13,9 +13,6 @@ app.use(express.static('public'));
 
 let count = 0; 
 
-
-
-
 app.get('/',(req,res)=>{
     res.sendFile(path.join(__dirname+'/public/home.html'));    
 })
@@ -34,7 +31,7 @@ io.on('connection', (socket) => {
     })
     
     socket.on('sendloc',(coords,callbackt)=>{
-        io.emit('message',`https://www.google.com/maps/@${coords.latitude},${coords.longitude}z`);
+        io.emit('locmessage',`https://www.google.com/maps/@${coords.latitude},${coords.longitude}z`);
         callbackt('Location Shared');
     })
 });
