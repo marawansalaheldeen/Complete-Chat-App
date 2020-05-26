@@ -7,6 +7,7 @@ const {generateMessages,locationMessages} = require('./utils/messages')
 const app = express();
 const server  = http.createServer(app);
 const io = socketio(server);
+const {addUser,removeUser,getUser,getUsersInRoom} = require('./utils/users');
 
 
 const port = process.env.PORT || 3000;
@@ -23,8 +24,26 @@ io.on('connection', (socket) => {
 
 
     socket.on('disconnect',()=>{
-        io.emit('message',generateMessages('a user has left'));
+        const user = removeUser(socket.id);
+
+        if(user){
+            io.to(user.room).emit('message',generateMessages(`${user.username} has left`));
+        }
     })
+
+    socket.on('join',(options,callback)=>{
+        const {error,user} = addUser({id:socket.id, ...options});
+
+        if(error){
+            return callback(error);
+        }
+        socket.join(user.room);
+        socket.emit('message',generateMessages('Welcome!'));
+        socket.broadcast.to(user.room).emit('message',generateMessages( `${user.username} has joined`));
+
+        callback()
+    })
+
     socket.on('sendMessage',(msg,callback)=>{
         io.emit('message',generateMessages(msg));
         callback('Dell');
@@ -33,12 +52,6 @@ io.on('connection', (socket) => {
     socket.on('sendloc',(coords,callbackt)=>{
         io.emit('locmessage',locationMessages(`https://www.google.com/maps/@${coords.latitude},${coords.longitude}z`));
         callbackt('Location Shared');
-    })
-
-    socket.on('join',({username,room})=>{
-        socket.join(room)
-        socket.emit('message',generateMessages('Welcome!'));
-        socket.broadcast.to(room).emit('message',generateMessages( `${username} has joined`));
     })
 });
 

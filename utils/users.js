@@ -48,7 +48,7 @@ const getUser = (id)=>{
             'error':"No user found!"
         }
     }else{
-        return "user found"
+        return user
     }
 
 }
