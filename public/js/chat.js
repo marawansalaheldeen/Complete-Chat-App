@@ -10,6 +10,7 @@ const $messages = document.querySelector('#messages');
 //Templates
 const messageTemplate = document.querySelector('#message-temp').innerHTML;
 const locmsge = document.querySelector('#loc-temp').innerHTML;
+const sidebartemp = document.querySelector('#sidebar-template').innerHTML;
 
 //Options
 const {username,room} = Qs.parse(location.search,{ignoreQueryPrefix:true});
@@ -60,6 +61,14 @@ socket.on('locmessage',(locmsg)=>{
     autoscroll();
 })
 
+socket.on('roomData',({room,users})=>{
+        const html = Mustache.render(sidebartemp,{
+            room,
+            users
+        })
+
+    document.querySelector('#sidebar').innerHTML = html ;  
+})
 $messageForm.addEventListener('submit', (e) => {
     e.preventDefault();
     $formButton.setAttribute('disabled','disabled');
