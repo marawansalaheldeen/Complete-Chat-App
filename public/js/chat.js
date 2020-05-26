@@ -9,34 +9,43 @@ const $locationButton = document.querySelector('#send-location');
 const $messages = document.querySelector('#messages');
 //Templates
 const messageTemplate = document.querySelector('#message-temp').innerHTML;
+const locmsge = document.querySelector('#loc-temp').innerHTML;
+
+//Options
+const {username,room} = Qs.parse(location.search,{ignoreQueryPrefix:true});
+
 socket.on('message',(message) => {
     console.log(message);
     const html = Mustache.render(messageTemplate,{
-        message
+        message:message.text,
+        createdAt: moment(message.createdAt).format('h:mm a'),
+        username
     });
     $messages.insertAdjacentHTML('beforeend',html);
 })
-const locmsge = document.querySelector('#loc-temp').innerHTML;
+
 socket.on('locmessage',(locmsg)=>{
     console.log(locmsg);
     const html = Mustache.render(locmsge,{
-        locmsg
+        locmsg: locmsg.location,
+        createdAt: moment(locmsg.createdAt).format('h:mm a')
     });
     $messages.insertAdjacentHTML('beforeend',html);
 })
+
 $messageForm.addEventListener('submit', (e) => {
     e.preventDefault();
     $formButton.setAttribute('disabled','disabled');
     //disable
-    const message = e.target.elements.msge.value;
-
-    socket.emit('sendMessage', message,(callback)=>{
+    const message = e.target.elements.message.value;
+ 
+    socket.emit('sendMessage',message,(callback)=>{
         //enable
         $formButton.removeAttribute('disabled');
         $formInput.value='';
         $formInput.focus();
         console.log('message delviered',callback);
-
+    
     })
 })
 
@@ -54,3 +63,5 @@ $locationButton.addEventListener('click',()=>{
         })
     })
 })
+
+socket.emit('join',{username,room});
