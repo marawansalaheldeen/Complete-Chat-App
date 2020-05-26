@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
         const user = removeUser(socket.id);
 
         if(user){
-            io.to(user.room).emit('message',generateMessages(`${user.username} has left`));
+            io.to(user.room).emit('message',generateMessages('SYSTEM ADMIN :',`${user.username} has left`));
         }
     })
 
@@ -38,19 +38,21 @@ io.on('connection', (socket) => {
             return callback(error);
         }
         socket.join(user.room);
-        socket.emit('message',generateMessages('Welcome!'));
-        socket.broadcast.to(user.room).emit('message',generateMessages( `${user.username} has joined`));
+        socket.emit('message',generateMessages('SYSTEM ADMIN :','Welcome!'));
+        socket.broadcast.to(user.room).emit('message',generateMessages('SYSTEM ADMIN :',`${user.username} has joined`));
 
         callback()
     })
 
     socket.on('sendMessage',(msg,callback)=>{
-        io.emit('message',generateMessages(msg));
+        const user = getUser(socket.id);
+        io.to(user.room).emit('message',generateMessages(user.username,msg));
         callback('Dell');
     })
     
     socket.on('sendloc',(coords,callbackt)=>{
-        io.emit('locmessage',locationMessages(`https://www.google.com/maps/@${coords.latitude},${coords.longitude}z`));
+        const user = getUser(socket.id);
+        io.to(user.room).emit('locmessage',locationMessages(user.username,`https://www.google.com/maps/@${coords.latitude},${coords.longitude}z`));
         callbackt('Location Shared');
     })
 });

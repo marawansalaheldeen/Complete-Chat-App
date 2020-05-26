@@ -14,23 +14,50 @@ const locmsge = document.querySelector('#loc-temp').innerHTML;
 //Options
 const {username,room} = Qs.parse(location.search,{ignoreQueryPrefix:true});
 
+const autoscroll = ()=>{
+    //selecting element
+    const $newMessage = $messages.lastElementChild;
+
+    //get height of new messages
+    const newMessageStyles = getComputedStyle($newMessage);
+    const newMessageMargin = parseInt(newMessageStyles.marginBottom);
+    const $newMessageHeight = $newMessage.offsetHeight + newMessageMargin;
+
+    //get visible height
+    const visibleHeight = $messages.offsetHeight;
+
+    //height of container 
+    const containerHeight = $messages.scrollHeight;
+
+    //how far i scrolled 
+    const scrollOfSet = $messages.scrollTop + visibleHeight;
+
+    if(containerHeight - $newMessageHeight <= scrollOfSet){
+        $messages.scrollTop = $messages.scrollHeight
+    } 
+
+}
+
 socket.on('message',(message) => {
     console.log(message);
     const html = Mustache.render(messageTemplate,{
+        username:message.username,
         message:message.text,
         createdAt: moment(message.createdAt).format('h:mm a'),
-        username
     });
     $messages.insertAdjacentHTML('beforeend',html);
+    autoscroll();
 })
 
 socket.on('locmessage',(locmsg)=>{
     console.log(locmsg);
     const html = Mustache.render(locmsge,{
+        username:locmsg.username,
         locmsg: locmsg.location,
         createdAt: moment(locmsg.createdAt).format('h:mm a')
     });
     $messages.insertAdjacentHTML('beforeend',html);
+    autoscroll();
 })
 
 $messageForm.addEventListener('submit', (e) => {
